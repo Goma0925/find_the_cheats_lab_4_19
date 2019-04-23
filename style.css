@@ -1,0 +1,15 @@
+#main-graph{
+  padding-top: 5%;
+  padding-left: 30%;
+  margin-right: 30%;
+}
+
+.description {
+  margin-left: 20%;
+  margin-right: 20%;
+  padding: 10px;
+  background-color: white;
+  border: solid;
+  border-radius: 20px;
+  border-color: blue;
+}
