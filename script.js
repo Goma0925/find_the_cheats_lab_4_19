@@ -141,7 +141,7 @@ var drawGraph = function(dataArr, picSrcArr){
                 .data(picSrcArr)
                 .enter()
                 .append("image")
-                .attr("xlink:href", function(picSrc){return "/student_images/" + picSrc})
+                .attr("xlink:href", function(picSrc){return "student_images/" + picSrc})
                 .attr("x", xScale(0))
                 .attr("y", function(picSrc, i){return yScale(i+1)})
                 .attr("width", boxSize)
