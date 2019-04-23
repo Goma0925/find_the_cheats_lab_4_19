@@ -13,8 +13,9 @@
   border-radius: 20px;
   border-color:rgb(221,210,59);
 }
-.title{
+h1{
   padding-top: 5%;
   padding-left: 25%;
   margin-right: 25%;
+  color:rgb(108,96,36);
 }
