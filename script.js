@@ -28,8 +28,8 @@ var colorScale = [
     {threshold:[0.4, 0.2], color: "#EBFA05"},//light pink
     {threshold:[0.2, -0.2], color: "#66FA05"},//white
     {threshold:[-0.2, -0.4], color: "#EBFA05"},//light pink
-    {threshold:[-0.4, -0.8], color: "#FAA505"},//pink
-    {threshold:[-0.8, -1.0], color: "#FA2A05"},//red
+    {threshold:[-0.4, -0.7], color: "#FAA505"},//pink
+    {threshold:[-0.7, -1.0], color: "#FA2A05"},//red
     ]
 
 var colorMap = function(val){
