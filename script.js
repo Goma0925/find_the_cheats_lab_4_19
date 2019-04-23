@@ -2,14 +2,14 @@ var dataP = d3.json("classData.json");
 
 //Global GraphSettings---------------------------------------------------
 svgScreen = {
-  size: 500
+  size: 700
 }
 
 svgMargin = {
   top: 30,
   bottom:30,
   left: 0,
-  right: 80
+  right: 200
 }
 
 var boxSize = 0; //Initialized in initBoxSize()
@@ -17,17 +17,34 @@ var boxSize = 0; //Initialized in initBoxSize()
 var xScale = d3.scaleLinear();
 var yScale = d3.scaleLinear();
 
+
+
 var startColor = "#ffffff";
 var endColor = "#3498DB"
+
+var colorScale = [
+    {threshold:[1.0, 0.7], color: "#FA2A05"},//red
+    {threshold:[0.7, 0.4], color: "#FAA505"},//pink
+    {threshold:[0.4, 0.2], color: "#EBFA05"},//light pink
+    {threshold:[0.2, -0.2], color: "#66FA05"},//white
+    {threshold:[-0.2, -0.4], color: "#EBFA05"},//light pink
+    {threshold:[-0.4, -0.8], color: "#FAA505"},//pink
+    {threshold:[-0.8, -1.0], color: "#FA2A05"},//red
+    ]
+
 var colorMap = function(val){
-  colorScale = d3.scaleLinear()
-              .domain([0, 1])
-              .range([startColor, endColor]);
   if (val === 1){
     return "black";
   }
   else {
-    return colorScale(val);
+      var colorCode = ""
+      colorScale.forEach(function(scaleObj){
+      //console.log("val:" + val + "   threshold[1]:" + scaleObj.threshold[1])
+      if ( val <= scaleObj.threshold[0] && val > scaleObj.threshold[1]){console.log(scaleObj.threshold[0] + ">=" + val + " >" + scaleObj.threshold[1]);
+      console.log("COLOR=", scaleObj.color);
+      colorCode = scaleObj.color};
+    });
+    return colorCode;
   }
 };
 
@@ -143,53 +160,78 @@ var drawGraph = function(dataArr, picSrcArr){
                           .attr("width", boxSize)
                           .attr("height", boxSize)
                           .attr("stroke", "#555556")
-                          .attr("stroek-width", 1)
-                          .attr("fill", function(corrObj){return colorMap(corrObj.r)})
+                          .attr("stroke-width", 1)
+                          .attr("fill", function(corrObj){console.log("VAL=" + corrObj.r + "   " + colorMap(corrObj.r));return colorMap(corrObj.r)})
 //------------------------
 
 var legendWidth = 80;
 var legendHeight = 300;
 
-var legendScale = d3.scaleLinear()
-                    .domain([1, 0])
-                    .range([0, legendHeight])
-
-var axisFunc = d3.axisRight()
-                .scale(legendScale);
+var legendColorScale = ["#F90422", "#FB5166", "FA7E8D", "FCFAFA", "FA7E8D", "FB5166", "F90422"]
 
 var legend = graphSvg
-.append("defs")
-.append("svg:linearGradient")
-.attr("id", "gradient")
-.attr("x1", "100%")
-.attr("y1", "0%")
-.attr("x2", "100%")
-.attr("y2", "100%")
-.attr("spreadMethod", "pad");
+            .append("g")
+            .attr("class", "legend")
+            .attr("transform", "translate(" +  xScale(picSrcArr.length + 2) + "," + boxSize + ")");
 
-legend
-.append("stop")
-.attr("offset", "0%")
-.attr("stop-color", endColor)
-.attr("stop-opacity", 1);
+var legendRects = legend.selectAll("rect")
+                  .data(colorScale)
+                  .enter()
+                  .append("rect")
+                  .attr("x", 0)
+                  .attr("y", function(threshold, i){return (i * 30) + 20})
+                  .attr("height", function(threshold, i){return 20})
+                  .attr("width", function(threshold, i){return 20})
+                  .attr("fill", function(threshold){return threshold.color})
+                  .attr("stroke", "black")
+                  .attr("stroke-width", 1)
 
-legend
-.append("stop")
-.attr("offset", "100%")
-.attr("stop-color", startColor)
-.attr("stop-opacity", 1);
+var legendTexts = legend.selectAll("text")
+                  .data(colorScale)
+                  .enter()
+                  .append("text")
+                  .attr("x", 25)
+                  .attr("y", function(threshold, i){return (i * 30) + 35})
+                  .text(function(threshold){return threshold.threshold[0] + " ~ " + threshold.threshold[1]});
 
-graphSvg.append("rect")
-.attr("width", legendWidth/2-13)
-.attr("height", legendHeight)
-.style("fill", "url(#gradient)")
-.attr("stroke", "#555556")
-.attr("transform", "translate(" +  (svgScreen.size - 50) + "," + boxSize + ")");
+var legendTitle = legend.append("text")
+                        .text("Correlation coeficient R:")
+                        .attr("x", 0)
+                        .attr("y", 10)
 
-legenAxis = graphSvg.append("g")
-            .attr("class", "legen-axis")
-            .call(axisFunc)
-            .attr("transform", "translate(" +  (svgScreen.size - 50 + legendWidth/2-13) + "," + boxSize + ")");;
+// var legend = graphSvg
+// .append("defs")
+// .append("svg:linearGradient")
+// .attr("id", "gradient")
+// .attr("x1", "100%")
+// .attr("y1", "0%")
+// .attr("x2", "100%")
+// .attr("y2", "100%")
+// .attr("spreadMethod", "pad");
+//
+// legend
+// .append("stop")
+// .attr("offset", "0%")
+// .attr("stop-color", endColor)
+// .attr("stop-opacity", 1);
+//
+// legend
+// .append("stop")
+// .attr("offset", "100%")
+// .attr("stop-color", startColor)
+// .attr("stop-opacity", 1);
+//
+// graphSvg.append("rect")
+// .attr("width", legendWidth/4)
+// .attr("height", legendHeight)
+// .style("fill", "url(#gradient)")
+// .attr("stroke", "#555556")
+// .attr("transform", "translate(" +  (svgScreen.size - 50) + "," + boxSize + ")");
+//
+// legenAxis = graphSvg.append("g")
+//             .attr("class", "legen-axis")
+//             .call(axisFunc)
+//             .attr("transform", "translate(" +  (svgScreen.size - 50 + legendWidth/4) + "," + boxSize + ")");;
 
 
 
@@ -199,9 +241,9 @@ legenAxis = graphSvg.append("g")
   //----------------------
   // var studentPics = graphSvg
   //                   .append("circle")
-  //                   .attr("cx", xScale(23))
-  //                   .attr("cy", 10)
-  //                   .attr("r", 3)
+  //                   .attr("cx", svgScreen.size)
+  //                   .attr("cy", 0)
+  //                   .attr("r", 40)
   //                   .attr("fill", red)
 
 console.log("x domai:", xScale(23));
